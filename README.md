@@ -1,103 +1,159 @@
 # Universal Clock Limiter (ARM)
 
-Universal Clock Limiter is a small native Windows 11 ARM64 utility for setting a maximum CPU frequency policy without installing extra runtimes.
+**Windows 11 ARM64 CPU frequency limiter for Snapdragon X Plus, Snapdragon X Elite and other Windows on ARM PCs.**
 
-I built it for Windows on ARM laptops where I wanted an easy way to trade some peak CPU performance for lower power use and less heat during sustained workloads. Instead of editing `powercfg` settings by hand, you enter a GHz limit, press **Apply Limit**, and the app writes the relevant Windows processor power-management settings for AC and battery use.
+Universal Clock Limiter (ARM) is a small native Windows utility that lets you set a maximum CPU frequency policy without manually editing `powercfg` settings. It is intended for Windows on ARM laptops where you may want to trade some peak CPU performance for lower power use, lower heat output and potentially better battery life during sustained CPU-heavy workloads.
+
+The app is being developed and tested on a **Microsoft Surface Laptop 7 with Snapdragon X Plus**. Snapdragon X Elite and other Windows 11 ARM64 systems use the same Windows processor power-management framework, but hardware validation can still differ by device and firmware.
 
 Author: **Mario Gad**  
 Copyright © 2026 Mario Gad. All rights reserved.
 
-## Current status
+## At a glance
 
-This is an early public beta.
-
-Initial development and testing is being done on a **Surface Laptop 7 with Snapdragon X Plus**. Snapdragon X Elite uses the same Windows 11 ARM power-management framework, but I am not marking X Elite as fully validated until I have independent hardware test results.
-
-The app is Windows 11 ARM64 only.
-
-## What it does
-
-- Direct frequency input from **0.80 GHz to 5.00 GHz**
-- Nothing changes until **Apply Limit** is pressed
-- Applies the requested policy to both AC and battery operation
-- Handles `PROCFREQMAX`, `PROCFREQMAX1`, and `PROCFREQMAX2` where Windows exposes them
-- Optional **Strict Cap** mode disables boost policy and autonomous processor control where supported
-- Also applies limits to workload-specific Windows PPM profiles such as GameMode and LowLatency
-- **Restore Stock** removes the manual frequency cap and returns processor control to Windows
+- Windows 11 ARM64 only
+- Snapdragon X Plus supported as the primary development platform
+- Snapdragon X Elite targeted and open for additional validation
+- Direct CPU limit input from **0.80 GHz to 5.00 GHz**
+- Applies limits to both AC and battery operation
+- Optional **Strict Cap** mode
+- Handles GameMode and LowLatency processor power profiles
+- One-click **Restore Stock**
 - Native ARM64 executable
-- No Python, .NET runtime, VC++ Redistributable, or installer required
+- Portable: no Python, .NET, VC++ Redistributable or installer required
 
-## Why lower the maximum frequency?
+## Why this exists
 
-A lower CPU frequency ceiling can reduce the voltage/frequency range used under load. On supported hardware this can lower peak CPU power draw and heat output. On a laptop that can also help battery life during sustained CPU-heavy work.
+Windows on ARM already manages CPU frequency dynamically, but there are situations where a lower maximum frequency can be useful. A lower ceiling can reduce the CPU's available voltage/frequency range under load, which may reduce peak CPU power draw and heat output.
 
-The exact result depends on the workload. A browser tab, a video, a game, and a full CPU render do not stress the system in the same way. Display brightness, GPU load, Wi-Fi, memory, storage, background tasks, and firmware behavior also affect total system power.
+Typical use cases include:
 
-This tool does not promise a fixed watt reduction or a fixed battery-life gain.
+- reducing heat during long CPU-heavy workloads
+- lowering peak CPU power consumption
+- experimenting with battery-efficient Snapdragon X settings
+- limiting CPU frequency on a Surface Laptop 7 or another Windows on ARM laptop
+- comparing performance-per-watt at different CPU limits
+- testing lower-frequency profiles without editing Windows power settings by hand
+
+This is a **CPU frequency-policy limiter**, not a direct hardware clock controller. The actual result depends on the processor, firmware, workload and Windows power-management implementation.
 
 ## Download and use
 
 1. Download `Universal_Clock_Limiter_ARM_v3.0.exe` from this repository.
 2. Run it and accept the Windows UAC prompt.
-3. Enter a value between `0.80` and `5.00`.
+3. Enter a value between `0.80` and `5.00` GHz.
 4. Leave **Strict Cap** enabled if you want the strongest Windows-side limit.
 5. Press **Apply Limit**.
 6. Press **Restore Stock** when you want normal Windows processor management again.
 
-Example: entering `2.00` requests a 2000 MHz maximum processor-frequency policy.
+Example: entering `2.00` requests a maximum processor-frequency policy of `2000 MHz`.
 
-## Important: this is not an overclocking tool
+## What the app changes
 
-Entering a number above the physical maximum of the CPU does not make the processor run faster than its hardware limit.
+The application uses Windows processor power-management policies, including:
 
-For example, entering `5.00` on a CPU that tops out at 3.4 GHz does not overclock it to 5 GHz. The application sets a Windows maximum-frequency policy. Hardware limits, firmware, thermals, OEM policy, and the Windows processor power manager still decide what the CPU can actually do.
+- `PROCFREQMAX`
+- `PROCFREQMAX1`
+- `PROCFREQMAX2` where exposed by Windows
+- processor boost policy in Strict Cap mode
+- autonomous CPPC / processor control where supported
+- workload-specific PPM profiles including GameMode and LowLatency
+
+The selected value is applied to both AC and battery profiles.
+
+## Strict Cap
+
+Strict Cap is intended for systems where Windows may temporarily request a higher performance state because of GameMode, latency-sensitive workloads or platform power management.
+
+When enabled, the app also disables Windows processor boost policy and autonomous processor performance control where those settings are supported by the platform.
+
+Some ARM systems may still reinterpret or ignore individual Windows policy requests at firmware level. This is why benchmark validation is more useful than relying only on a GHz number shown in Task Manager.
 
 ## Compatibility
 
 | Platform | Status |
 | --- | --- |
 | Windows 11 ARM64 | Required |
-| Snapdragon X Plus | Primary development / test platform |
-| Snapdragon X Elite | Expected to work, validation wanted |
-| Other Windows 11 ARM64 processors | May work if the required Windows policies are exposed |
+| Snapdragon X Plus | Primary development and test platform |
+| Microsoft Surface Laptop 7, Snapdragon X Plus | Current real-device test system |
+| Snapdragon X Elite | Targeted; more independent device testing wanted |
+| Other Windows on ARM processors | May work if the required Windows policies are exposed |
 | Windows x64 / x86 | Not supported by this build |
 
-## How it works
+See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) for the current hardware notes and test matrix.
 
-Windows exposes processor power-management settings through `powercfg` and the PowrProf API. The main frequency policy is `PROCFREQMAX`, expressed in MHz. Newer heterogeneous systems can also expose additional efficiency-class variants such as `PROCFREQMAX1` and `PROCFREQMAX2`.
+## Surface Laptop 7 / Snapdragon X testing
 
-Strict Cap also changes boost and autonomous performance policies when the platform exposes them. The application additionally covers workload-specific PPM profiles because Windows can use separate policies for GameMode, LowLatency, sustained performance, low-power workloads, and QoS classes.
+The main development system is a Surface Laptop 7 running Windows 11 on ARM with a Snapdragon X Plus processor.
 
-Microsoft documentation:
+Current testing focuses on:
 
-- MaxFrequency: https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/options-for-perf-state-engine-maxfrequency
-- Processor power-management profiles: https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/configure-processor-power-management-options
-- powercfg command-line options: https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options
+- normal desktop use
+- browser CPU stress
+- sustained CPU benchmarks
+- GameMode behavior
+- Windows Start / latency-sensitive interactions
+- Minecraft and other game workloads
+- restoring stock Windows behavior after a custom limit
 
-## A note about reported GHz values
+The same project is also intended for Snapdragon X Elite laptops, but those systems should be treated as hardware-validation targets until test results are available from real X Elite devices.
 
-On modern ARM/CPPC systems, the GHz number shown by Task Manager or another monitoring tool is not always a perfect representation of the effective hardware clock. Windows and the platform firmware can use abstract performance states and workload-specific policies.
+## Power, heat and battery life
 
-For that reason, the best way to validate a limit is to combine:
+Reducing the CPU frequency ceiling can reduce CPU power draw and heat under sustained load, but it does not guarantee a fixed watt reduction or a fixed battery-life improvement.
 
-1. policy read-back with `powercfg`, and
-2. a repeatable CPU benchmark before and after applying the limit.
+Total laptop power also depends on:
 
-See [`docs/TESTING.md`](docs/TESTING.md) for the current test procedure.
+- display brightness and refresh rate
+- GPU and NPU workload
+- Wi-Fi activity
+- memory and storage activity
+- background processes
+- OEM firmware
+- how long a workload takes to finish at the lower frequency
 
-## Restore / recovery
+For light tasks such as video playback or idle desktop use, the CPU may already spend much of its time in low-power states, so the benefit can be smaller than under sustained CPU load.
 
-If a limit behaves unexpectedly, open the app and press **Restore Stock**. A reboot is also recommended after unusual power-policy behavior.
+## This is not an overclocking tool
 
-You can inspect the active processor policy manually with:
+Entering a number above the physical maximum of the processor does not overclock the CPU.
+
+For example, entering `5.00` on a processor whose hardware maximum is 3.4 GHz will not make it run at 5 GHz. The program only sets a Windows maximum-frequency policy. Hardware limits, firmware, thermals and Windows remain in control.
+
+## How to verify a limit
+
+On modern ARM / CPPC systems, the frequency shown by Task Manager or another monitoring utility is not always a reliable representation of the effective hardware clock.
+
+For a useful validation test:
+
+1. record a repeatable CPU benchmark at stock settings
+2. apply a lower limit such as `2.00 GHz`
+3. verify the Windows policy values with `powercfg`
+4. run the same benchmark again
+5. compare performance and behavior
+6. press **Restore Stock** and confirm stock performance returns
+
+You can inspect the current processor settings with:
 
 ```powershell
 powercfg /qh SCHEME_CURRENT SUB_PROCESSOR
 ```
 
+See [`docs/TESTING.md`](docs/TESTING.md) for the test procedure.
+
+## Microsoft documentation
+
+The app uses documented Windows processor power-management mechanisms:
+
+- [Maximum processor frequency / MaxFrequency](https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/options-for-perf-state-engine-maxfrequency)
+- [Processor power-management profiles](https://learn.microsoft.com/en-us/windows-hardware/customize/power-settings/configure-processor-power-management-options)
+- [powercfg command-line options](https://learn.microsoft.com/en-us/windows-hardware/design/device-experiences/powercfg-command-line-options)
+
+Microsoft lists MaxFrequency support for Windows 11 on ARM-based devices. Windows also supports workload-specific processor power-management profiles such as GameMode and LowLatency.
+
 ## Reporting hardware results
 
-If you test it on another Windows 11 ARM device, open a hardware-validation issue and include:
+If you test Universal Clock Limiter on another Windows 11 ARM device, open a hardware-validation issue and include:
 
 - device model
 - CPU model
@@ -105,11 +161,15 @@ If you test it on another Windows 11 ARM device, open a hardware-validation issu
 - selected frequency
 - Strict Cap on/off
 - AC or battery
-- workload / benchmark used
+- workload or benchmark used
 - stock score and limited score if available
 - whether Restore Stock returned performance to normal
 
-This is especially useful for Snapdragon X Elite systems.
+Reports from **Snapdragon X Elite**, other **Snapdragon X Plus** laptops and non-Surface Windows on ARM devices are especially useful.
+
+## Search terms / project scope
+
+This project is relevant to users looking for a Windows on ARM CPU limiter, Snapdragon X frequency limiter, Snapdragon X Plus underclock utility, Snapdragon X Elite power-management tool, ARM64 CPU clock limiter, Surface Laptop 7 CPU limiter, lower-power Snapdragon X settings or Windows 11 ARM powercfg tuning.
 
 ## License
 
@@ -119,4 +179,4 @@ Copyright © 2026 Mario Gad. All rights reserved. See [`LICENSE.txt`](LICENSE.tx
 
 This software changes Windows processor power-management settings and requires Administrator privileges. Use it at your own risk. The software is provided as-is, without warranty.
 
-Universal Clock Limiter (ARM) is an independent project and is not affiliated with Microsoft, Qualcomm, or the Surface brand.
+Universal Clock Limiter (ARM) is an independent project and is not affiliated with Microsoft, Qualcomm or the Surface brand.
