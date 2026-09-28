@@ -26,14 +26,7 @@ Copyright © 2026 Mario Gad. All rights reserved.
 
 Windows on ARM already manages CPU frequency dynamically, but there are situations where a lower maximum frequency can be useful. A lower ceiling can reduce the CPU's available voltage/frequency range under load, which may reduce peak CPU power draw and heat output.
 
-Typical use cases include:
-
-- reducing heat during long CPU-heavy workloads
-- lowering peak CPU power consumption
-- experimenting with battery-efficient Snapdragon X settings
-- limiting CPU frequency on a Surface Laptop 7 or another Windows on ARM laptop
-- comparing performance-per-watt at different CPU limits
-- testing lower-frequency profiles without editing Windows power settings by hand
+Typical use cases include reducing heat during long CPU-heavy workloads, experimenting with battery-efficient Snapdragon X settings, limiting CPU frequency on a Surface Laptop 7 or another Windows on ARM laptop, and comparing performance-per-watt at different CPU limits.
 
 This is a **CPU frequency-policy limiter**, not a direct hardware clock controller. The actual result depends on the processor, firmware, workload and Windows power-management implementation.
 
@@ -86,15 +79,7 @@ See [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md) for the current hardware no
 
 The main development system is a Surface Laptop 7 running Windows 11 on ARM with a Snapdragon X Plus processor.
 
-Current testing focuses on:
-
-- normal desktop use
-- browser CPU stress
-- sustained CPU benchmarks
-- GameMode behavior
-- Windows Start / latency-sensitive interactions
-- Minecraft and other game workloads
-- restoring stock Windows behavior after a custom limit
+Current testing focuses on normal desktop use, browser CPU stress, sustained CPU benchmarks, GameMode behavior, Windows Start / latency-sensitive interactions, Minecraft and other game workloads, and restoring stock Windows behavior after a custom limit.
 
 The same project is also intended for Snapdragon X Elite laptops, but those systems should be treated as hardware-validation targets until test results are available from real X Elite devices.
 
@@ -102,15 +87,7 @@ The same project is also intended for Snapdragon X Elite laptops, but those syst
 
 Reducing the CPU frequency ceiling can reduce CPU power draw and heat under sustained load, but it does not guarantee a fixed watt reduction or a fixed battery-life improvement.
 
-Total laptop power also depends on:
-
-- display brightness and refresh rate
-- GPU and NPU workload
-- Wi-Fi activity
-- memory and storage activity
-- background processes
-- OEM firmware
-- how long a workload takes to finish at the lower frequency
+Total laptop power also depends on display brightness and refresh rate, GPU and NPU workload, Wi-Fi activity, memory and storage activity, background processes, OEM firmware, and how long a workload takes to finish at the lower frequency.
 
 For light tasks such as video playback or idle desktop use, the CPU may already spend much of its time in low-power states, so the benefit can be smaller than under sustained CPU load.
 
@@ -153,23 +130,9 @@ Microsoft lists MaxFrequency support for Windows 11 on ARM-based devices. Window
 
 ## Reporting hardware results
 
-If you test Universal Clock Limiter on another Windows 11 ARM device, open a hardware-validation issue and include:
-
-- device model
-- CPU model
-- Windows build
-- selected frequency
-- Strict Cap on/off
-- AC or battery
-- workload or benchmark used
-- stock score and limited score if available
-- whether Restore Stock returned performance to normal
+If you test Universal Clock Limiter on another Windows 11 ARM device, open a hardware-validation issue and include the device model, CPU model, Windows build, selected frequency, Strict Cap setting, power source, workload or benchmark, and whether Restore Stock returned performance to normal.
 
 Reports from **Snapdragon X Elite**, other **Snapdragon X Plus** laptops and non-Surface Windows on ARM devices are especially useful.
-
-## Search terms / project scope
-
-This project is relevant to users looking for a Windows on ARM CPU limiter, Snapdragon X frequency limiter, Snapdragon X Plus underclock utility, Snapdragon X Elite power-management tool, ARM64 CPU clock limiter, Surface Laptop 7 CPU limiter, lower-power Snapdragon X settings or Windows 11 ARM powercfg tuning.
 
 ## License
 
