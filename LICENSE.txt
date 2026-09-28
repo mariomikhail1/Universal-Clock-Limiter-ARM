@@ -1,0 +1,6 @@
+Universal Clock Limiter (ARM)
+Copyright (c) 2026 Mario Gad. All rights reserved.
+
+No permission is granted to copy, modify, redistribute, sublicense, sell, or create derivative works from the source code or binary except with prior written permission from Mario Gad.
+
+This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, and noninfringement. Use is at your own risk.
